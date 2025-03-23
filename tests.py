@@ -5,14 +5,7 @@ from meteor_calendar_table import (
     get_json_from_urlfile,
     main,
 )
-from skyfield.api import Loader
-import pytz
-
-est_timezone = pytz.timezone("US/Eastern")
-
-load = Loader("/var/data")
-# eph = load('de421.bsp')
-eph = load("de430t.bsp")
+import os
 
 
 class MyTestCase(unittest.TestCase):
@@ -47,6 +40,7 @@ class MyTestCase(unittest.TestCase):
         self.assertTrue("date_peak" in df.columns)
         self.assertEqual(df.zhr.max(), 700)
         self.assertEqual(df.zhr.min(), 2)
+        self.assertTrue(os.path.exists("meteor_showers.csv"))
 
 
 if __name__ == "__main__":
