@@ -36,6 +36,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_main(self):
         df = main()
+        print(df)
         self.assertGreater(len(df), 40)
         self.assertTrue("date_peak" in df.columns)
         self.assertEqual(df.zhr.max(), 700)

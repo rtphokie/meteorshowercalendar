@@ -1,4 +1,5 @@
 import pandas as pd
+from pprint import pprint
 import json
 import requests
 import os
@@ -6,6 +7,10 @@ from skyfield.api import Loader
 from skyfield.errors import EphemerisRangeError
 from skyfield.framelib import ecliptic_frame
 import pytz
+
+pd.set_option("display.width", None)
+pd.set_option("display.max_columns", None)
+pd.set_option("display.max_rows", None)
 
 # globals are generally bad, but these are okay
 load = Loader("/var/data")  # reuse ephemeris across projects
@@ -112,6 +117,8 @@ def main(csv_filename='meteor_showers.csv'):
             "abbrev": key,
             "IAUNo": data["IAUNo"],
             "date_peak": None,
+            "zhr": None,
+            "class": None,
             "past_last_year": None,
             "past_last_zhr": None,
             "past_last_peak": None,
@@ -120,8 +127,6 @@ def main(csv_filename='meteor_showers.csv'):
             "past_outburst_date": None,
             "past_outburst_zhr": None,
             "past_outburst_peak": None,
-            "zhr": None,
-            "variable": False,
         }
         for attr in ["parentObj", "speed"]:
             if attr in data:
@@ -129,9 +134,7 @@ def main(csv_filename='meteor_showers.csv'):
         results.append(shower)
         process_activity(data, shower)
 
-    pd.set_option("display.width", None)
-    pd.set_option("display.max_columns", None)
-    pd.set_option("display.max_rows", None)
+
     df = pd.DataFrame(results)
     if csv_filename is not None:
         df.to_csv(csv_filename, index=False)
@@ -154,12 +157,23 @@ def process_activity(data, shower):
             for attr in ["zhr", "variable"]:
                 if attr in activity:
                     if attr == "variable":
-                        shower["variable"] = True
                         low, high = activity[attr].split("-")
                         shower["zhr"] = int(high)
                         shower["zhr_low"] = int(low)
                     else:
                         shower[attr] = activity[attr]
+            if 'zhr' in activity:
+                if 'variable' in activity:
+                    shower['class'] = 'variable'
+                elif activity['zhr'] >= 15:
+                    shower['class'] = 'major'
+                elif 0 < activity['zhr'] < 15:
+                    shower['class'] = 'minor'
+                else:
+                    pprint(activity)
+                    pprint(shower)
+                    raise
+
         else:
             activity["year"] = int(activity["year"])
 
