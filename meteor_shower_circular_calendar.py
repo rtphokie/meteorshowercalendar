@@ -1,7 +1,6 @@
 import unittest
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as p
 import pandas as pd
 
 
@@ -33,17 +32,13 @@ def main():
     df_pw.head()
     print(df_pw)
 
-    TIMES = [
-        to_seconds(row["value"], row["time_unit"])
-        for _, row in df_pw.iterrows()
-    ]
+    TIMES = [to_seconds(row["value"], row["time_unit"]) for _, row in df_pw.iterrows()]
     TIME_MAX = np.max(TIMES)
     TIME_MIN = np.min(TIMES)
 
     # 'low' and 'high' refer to the final dot size.
     def scale_to_interval(x, low=1, high=60):
         return ((x - TIME_MIN) / (TIME_MAX - TIME_MIN)) * (high - low) + low
-
 
     # Different sades of grey used in the plot
     GREY88 = "#e0e0e0"
@@ -63,12 +58,21 @@ def main():
     CATEGORY_CODES = pd.Categorical(df_pw["category"]).codes
 
     # Colormap taken from https://carto.com/carto-colors/
-    COLORMAP = ["#5F4690", "#1D6996", "#38A6A5", "#0F8554", "#73AF48",
-                "#EDAD08", "#E17C05", "#CC503E", "#94346E", "#666666"]
+    COLORMAP = [
+        "#5F4690",
+        "#1D6996",
+        "#38A6A5",
+        "#0F8554",
+        "#73AF48",
+        "#EDAD08",
+        "#E17C05",
+        "#CC503E",
+        "#94346E",
+        "#666666",
+    ]
 
     # Select colors for each password according to its category.
     COLORS = np.array(COLORMAP)[CATEGORY_CODES]
-
 
     # This is going to be helpful to create some space for labels within the circle
     # Don't worry if it doesn't make much sense yet, you're going to see it in action below
@@ -95,7 +99,7 @@ def main():
     ax.set_facecolor("white")
 
     # Use logarithmic scale for the radial axis
-    ax.set_rscale('symlog')
+    ax.set_rscale("symlog")
 
     # Angular axis starts at 90 degrees, not at 0
     ax.set_theta_offset(np.pi / 2)
@@ -107,7 +111,7 @@ def main():
     ax.vlines(ANGLES, 0 + PLUS, HEIGHTS + PLUS, color=COLORS, lw=0.9)
 
     # Add dots
-    ax.scatter(ANGLES, HEIGHTS + PLUS, s=scale_to_interval(HEIGHTS), color=COLORS);
+    ax.scatter(ANGLES, HEIGHTS + PLUS, s=scale_to_interval(HEIGHTS), color=COLORS)
 
     # Start by removing spines for both axes
     ax.spines["start"].set_color("none")
@@ -132,12 +136,20 @@ def main():
     for idx, row in LABELS_DF.iterrows():
         color = COLORS[row["index"]]
         ax.text(
-            x=ANGLES[row["x"]], y=row["y"], s=row["label"], color=color,
-            ha="right", va="center", ma="center", size=8,
-            family="Arial", weight="bold"
+            x=ANGLES[row["x"]],
+            y=row["y"],
+            s=row["label"],
+            color=color,
+            ha="right",
+            va="center",
+            ma="center",
+            size=8,
+            family="Arial",
+            weight="bold",
         )
 
     plt.show()
+
 
 class MyTestCase(unittest.TestCase):
     def test_something(self):
