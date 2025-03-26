@@ -158,7 +158,7 @@ def process_activity(data, shower):
                 if attr in activity:
                     if attr == "variable":
                         low, high = activity[attr].split("-")
-                        shower["zhr"] = int(high)
+                        shower["zhr_high"] = int(high)
                         shower["zhr_low"] = int(low)
                     else:
                         shower[attr] = activity[attr]
